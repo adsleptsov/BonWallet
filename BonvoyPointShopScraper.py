@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 # import requests
 import csv
 import os
@@ -87,7 +87,11 @@ def generate_csv(init_url, file_name):
 		# 	# grab each item and store it in the csv
 		
 		for i in range(num_of_pages+1):
+		# for i in range(3):
+
 			start_time_of_page = time.time()
+
+			print("Scraping page: " + str(i))
 
 			new_item_no = (i*96)
 			page_of_items = []
@@ -96,15 +100,18 @@ def generate_csv(init_url, file_name):
 			
 			full_url = init_url + str(new_item_no)
 			shop_html = shop_session.get(full_url)
-			soup = BeautifulSoup(shop_html.html.raw_html, "lxml")
 
-			print("Scraping page: " + str(i))
+			strainer = SoupStrainer("li", attrs={"class": "shortDescription"})
+
+			soup = BeautifulSoup(shop_html.html.raw_html, "lxml", parse_only=strainer)
 
 
+			# soup.renderContents
+			# print(soup.contents)
 
-			# item = soup.find(id = 'itemsList')
-			# item = soup.find_all(class_ = 'shortDescription')
-			items = soup.find_all(class_ = 'shortDescription')
+			# items = soup.find_all(class_ = 'shortDescription')
+			items = soup.select('.shortDescription')
+
 
 			# print(items.len())
 			for item in items:
