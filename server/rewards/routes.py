@@ -1,7 +1,8 @@
 from server.rewards import rewards_bp
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, jsonify, abort, request
 from server.config import db
 from server.rewards.models import CardRewards, PointRewards, QualifyingService, QualifyingLocation
+from server.restaurant_scraper  import get_merchants_data, extract_single_reward_data  # Assuming your scraper file is named scraper.py
 
 # Getter for CardRewards by id
 @rewards_bp.route('/card_rewards/<int:id>', methods=['GET'])
@@ -54,3 +55,28 @@ def get_qualifying(id):
         response['location_type'] = qualifying.location_type
     
     return jsonify(response)
+
+
+# Endpoint to check if a user is at a qualifying location
+@rewards_bp.route('/check_rewards', methods=['POST'])
+def check_rewards():
+    try:
+        # Extract location data from the incoming JSON request
+        user_data = request.get_json()
+        user_location = user_data.get('location')
+
+        if not user_location:
+            return jsonify({"error": "Location data is missing"}), 400
+
+        # Use the existing functions to get and extract reward data
+        data = get_merchants_data(API_URL, user_location)
+        merchants = data.get("merchants", [])
+        reward_data = extract_single_reward_data(merchants)
+
+        if reward_data:
+            return jsonify(reward_data), 200
+        else:
+            return jsonify({}), 200  # Empty JSON response if no location matches the criteria
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
