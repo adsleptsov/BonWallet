@@ -26,3 +26,20 @@ class PointRewards(db.Model):
 
 - locationType: String (lodging, dining, supermarket, etc.)
 '''
+
+class Qualifying(db.Model):
+    __abstract__ = True  # Abstract class, won't be created in the database
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+
+# QualifyingService class, extending Qualifying
+class QualifyingService(Qualifying):
+    __tablename__ = 'qualifying_service'
+    service_type = db.Column(db.String(255), nullable=False)
+
+# QualifyingLocation class, extending Qualifying
+class QualifyingLocation(Qualifying):
+    __tablename__ = 'qualifying_location'
+    location_type = db.Column(db.String(255), nullable=False)
+    point_reward_id = db.Column(db.Integer, db.ForeignKey('point_rewards.id'))
+    point_rewards = db.relationship('PointRewards', back_populates='qualifying_locations')
