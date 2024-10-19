@@ -9,3 +9,5 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 db = SQLAlchemy()
+with open('pw_hashes.txt', 'r') as f:
+    hashes = f.readlines()

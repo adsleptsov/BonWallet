@@ -1,11 +1,39 @@
 from server.rewards import rewards_bp
-from flask import Blueprint, jsonify, abort, request
+from flask import Blueprint, jsonify, abort, request, render_template
 from server.config import db
 from server.rewards.models import CardRewards, PointRewards, QualifyingService, QualifyingLocation
 #from server.restaurant_scraper import get_merchants_data, extract_single_reward_data  # Assuming your scraper file is named scraper.py
 from server.config import hashes
 from werkzeug.security import check_password_hash
 
+@rewards_bp.route('/add_card', methods=['GET', 'POST'])
+def add_card():
+    if request.method == 'GET':
+        return render_template('add_card.html')
+    data = request.get_json()
+    password = data.get('password')
+
+    for pwhash in hashes:
+        pwhash = pwhash.strip()
+        if not check_password_hash(pwhash, password):
+            return abort(404, description="incorrect password")
+
+    card_name = data.get('card_name')
+    additional_benefits = data.get('additional_benefits')
+    offer_terms_url = data.get('offer_terms_url')
+    benefit_terms_url = data.get('benefit_terms_url')
+
+    new_card = CardRewards(
+        card_name=card_name,
+        additional_benefits=additional_benefits,
+        offer_terms_url=offer_terms_url,
+        benefit_terms_url=benefit_terms_url
+    )
+
+    db.session.add(new_card)
+    db.session.commit()
+
+    return jsonify({'message': 'CardRewards added successfully', 'id': new_card.id})
 
 # Getter for CardRewards by id
 @rewards_bp.route('/card_rewards/<int:id>', methods=['GET'])

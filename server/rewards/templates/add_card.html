@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Card Rewards</title>
+</head>
+<body>
+    <h1>Add Card Rewards</h1>
+    <form method="POST" action="/rewards/add_card">
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+
+        <label for="card_name">Card Name:</label><br>
+        <input type="text" id="card_name" name="card_name"><br><br>
+
+        <label for="offer_terms_url">Offer Terms URL:</label><br>
+        <input type="text" id="offer_terms_url" name="offer_terms_url"><br><br>
+
+        <label for="benefit_terms_url">Benefit Terms URL:</label><br>
+        <input type="text" id="benefit_terms_url" name="benefit_terms_url"><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
