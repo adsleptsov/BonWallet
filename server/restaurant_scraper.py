@@ -1,35 +1,40 @@
 import requests
 import json
 
-# Define API endpoint and parameters
-api_url = "https://eataroundtown.marriott.com/api/v2/Merchants/Search"
-location = "37.22,-80.42"  # Example user location coordinates
+# Define constants for API endpoint
+API_URL = "https://eataroundtown.marriott.com/api/v2/Merchants/Search"
+DISTANCE_THRESHOLD = 0.1  # Define the distance threshold (0.1 for "inside" the location)
 
-# Make the API request
-response = requests.get(f"{api_url}?campaignCode=&location={location}")
-data = response.json()  # Parse the JSON response
+# Function to make the API request
+def get_merchants_data(api_url, location):
+    try:
+        response = requests.get(f"{api_url}?campaignCode=&location={location}")
+        response.raise_for_status()  # Raise an error for bad responses (4xx and 5xx)
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        # Log the error and return an empty response
+        print(f"An error occurred while fetching data: {e}")
+        return {"merchants": []}  # Fallback to an empty response
 
-# Define function to extract the required data
-def extract_rewards_data(merchants):
-    extracted_data = []
+# Function to filter and extract the required data for a single location
+def extract_single_reward_data(merchants):
     for merchant in merchants:
-        # Extract multiplier values
-        multiplier = max([int(benefit['value']) for benefit in merchant['benefits']])
+        # Only process merchants within the distance threshold
+        distance = merchant.get("distance", float('inf'))
+        if isinstance(distance, (int, float)) and distance <= DISTANCE_THRESHOLD:
+            # Extract multiplier values safely
+            benefits = merchant.get("benefits", [])
+            if benefits:
+                multiplier = max([int(benefit.get('value', 0)) for benefit in benefits])
+            else:
+                multiplier = 0
 
-        # Extract location types (e.g., restaurant, service)
-        locations = [merchant['type']]
+            # Extract location types (e.g., restaurant, service)
+            locations = [merchant.get('type', 'Unknown')]
 
-        # Add extracted data to the list
-        extracted_data.append({
-            "multiplier": str(multiplier),
-            "locations": locations
-        })
-
-    return extracted_data
-
-# Extract the data from the merchants section
-merchants = data.get("merchants", [])
-reward_data = extract_rewards_data(merchants)
-
-# Print or process the reward data
-print(json.dumps(reward_data, indent=2))
+            # Return the extracted data as JSON
+            return {
+                "multiplier": str(multiplier),
+                "locations": locations
+            }
+    return None
