@@ -91,9 +91,6 @@ read_csv(full_path_of_csv)
 
 # print(points_table)
 
-current_points = 1000000
+current_points = 17500
 ask_about(current_points)
-
-
-
 
