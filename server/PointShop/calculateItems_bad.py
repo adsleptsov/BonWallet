@@ -67,18 +67,54 @@ def read_csv(filename):
 def ask_about(curr_points):
 	curr_hash = simple_hash(curr_points)
 
+
 	#check if it doesnt exist
 
 	if curr_hash not in points_table:
-		# print("test")
-		# recompute hash to 500 points lower
-		ask_about(curr_points - 500)
+		# go deeper
+		new_points = curr_points - 500
+		if new_points > 0:
+			ask_about(new_points)
 	else:
-		items_list = points_table[curr_hash]
+		points_table = sorted(points_table, reverse=True)
 
-		print(f"There are {str(len(items_list))} item(s) you can redeem now for {curr_points} points!")
-		for item in items_list:
-			print(item.name, item.point_cost)
+		keys = list(points_table.keys())
+		keys.sort(reverse=True)
+
+		# for key in keys:
+		# 	print(key)
+
+		start_index = keys.index(curr_hash)
+		
+
+		items_you_can_buy = []
+		for index in range(start_index, 0, -1):
+			print(index)
+			if index not in points_table:
+				continue
+			items_list = points_table[index]
+			for item in items_list:
+				# print(item.name, item.point_cost)
+				items_you_can_buy.append(item)
+
+		print(f"There are {len(items_you_can_buy)} items you can buy with your Marriott Bonvoy Points!")
+
+
+		# for item in items_you_can_buy:
+		# 	print(item.name)
+		# 	print(item.point_cost)
+
+	# for items in range(points_table.)
+	# if curr_hash not in points_table:
+	# 	# print("test")
+	# 	# recompute hash to 500 points lower
+	# 	ask_about(curr_points - 500)
+	# else:
+	# 	items_list = points_table[curr_hash]
+
+	# 	print("There are " + str(len(items_list)) + " item(s) you can redeem now!")
+	# 	for item in items_list:
+	# 		print(item.name, item.point_cost)
 
 def simple_hash(cost):
 	hash = int(cost) // 500
@@ -91,6 +127,9 @@ read_csv(full_path_of_csv)
 
 # print(points_table)
 
-current_points = 17500
+current_points = 5000
 ask_about(current_points)
+
+
+
 

@@ -5,6 +5,7 @@ from server.config import db, PARENT_DIR
 from server.rewards.models import CardRewards, PointRewards, QualifyingService, QualifyingLocation
 from server.restaurant_scraper import get_merchants_data, extract_single_reward_data, API_URL  # Assuming your scraper file is named scraper.py
 from werkzeug.security import check_password_hash
+import re
 
 def verify_password_from_file(password):
     try:
@@ -256,12 +257,20 @@ def get_qualifying(id):
 @rewards_bp.route('/check_rewards', methods=['POST'])
 def check_rewards():
     try:
-        # Extract location data from the incoming JSON request
+        # Extract longitude and latitude data from the incoming JSON request
         user_data = request.get_json()
-        user_location = user_data.get('location')
+        latitude = user_data.get('latitude')
+        longitude = user_data.get('longitude')
 
-        if not user_location:
-            return jsonify({"error": "Location data is missing"}), 400
+        if not latitude or not longitude:
+            return jsonify({"error": "Longitude and/or latitude data is missing"}), 400
+
+        # Combine latitude and longitude into the expected format: "latitude,longitude"
+        user_location = f"{latitude},{longitude}"
+
+        # Validate the combined location format
+        if not is_valid_location(user_location):
+            return jsonify({"error": "Invalid location format"}), 400
 
         # Use the existing functions to get and extract reward data
         data = get_merchants_data(API_URL, user_location)
@@ -274,4 +283,12 @@ def check_rewards():
             return jsonify({}), 200  # Empty JSON response if no location matches the criteria
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "An internal server error occurred"}), 500
+
+    import re
+
+def is_valid_location(location):
+    # Regular expression for latitude, longitude validation
+    pattern = r'^-?\d{1,2}(\.\d+)?,\s?-?\d{1,3}(\.\d+)?$'
+    return bool(re.match(pattern, location))
+

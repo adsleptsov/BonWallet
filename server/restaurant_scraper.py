@@ -3,7 +3,7 @@ import json
 
 # Define constants for API endpoint
 API_URL = "https://eataroundtown.marriott.com/api/v2/Merchants/Search"
-DISTANCE_THRESHOLD = 0.1  # Define the distance threshold (0.1 for "inside" the location)
+DISTANCE_THRESHOLD = 10.1  # Define the distance threshold (0.1 for "inside" the location)
 
 # Function to make the API request
 def get_merchants_data(api_url, location):
@@ -32,13 +32,16 @@ def extract_single_reward_data(merchants):
             # Extract location types (e.g., restaurant, service)
             locations = [merchant.get('type', 'Unknown')]
 
+            # Extract merchant name
+            name = merchant.get('name', 'Unknown')
+
             # Return the extracted data as JSON
             return {
+                "name": name,
                 "multiplier": str(multiplier),
                 "locations": locations
             }
     return None
-
 
 # Main flow of the script
 def main(user_location):
