@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Point Rewards</title>
+</head>
+<body>
+    <h1>Add Point Rewards</h1>
+    <form method="POST" action="/rewards/add_point_rewards">
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="multiplier">Multiplier:</label><br>
+        <input type="number" step="0.01" id="multiplier" name="multiplier" required><br><br>
+
+        <label for="qualifying_ids">Qualifying IDs (comma-separated):</label><br>
+        <input type="text" id="qualifying_ids" name="qualifying_ids"><br><br>
+
+        <label for="card_id">Card ID (optional):</label><br>
+        <input type="number" id="card_id" name="card_id"><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

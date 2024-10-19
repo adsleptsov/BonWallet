@@ -6,7 +6,7 @@ card_points = db.Table('card_points',
 )
 
 point_qualifying = db.Table('point_qualifying', 
-    db.Column('point_id', db.Integer, db.ForeignKey('card_rewards.id'), primary_key=True),
+    db.Column('point_id', db.Integer, db.ForeignKey('point_rewards.id'), primary_key=True),
     db.Column('qualifying_id', db.Integer, db.ForeignKey('qualifying.id'), primary_key=True)
 )
 
@@ -39,11 +39,13 @@ class Qualifying(db.Model):
 
     __mapper_args__ = {
         'polymorphic_on': type,
-        'polymorphic_identity': 'qualifying'
+        'polymorphic_identity': 'qualifying',
+        'with_polymorphic': '*'
     }
 
 class QualifyingService(Qualifying):
-    __tablename__ = None  # No separate table for this subclass
+    __tablename__ = 'qualifying_service'
+    id = db.Column(db.Integer, db.ForeignKey('qualifying.id'), primary_key=True)
     service_type = db.Column(db.String(255), nullable=False)
 
     __mapper_args__ = {
@@ -51,7 +53,8 @@ class QualifyingService(Qualifying):
     }
 
 class QualifyingLocation(Qualifying):
-    __tablename__ = None  # No separate table for this subclass
+    __tablename__ = 'qualifying_location'
+    id = db.Column(db.Integer, db.ForeignKey('qualifying.id'), primary_key=True)
     location_type = db.Column(db.String(255), nullable=False)
 
     __mapper_args__ = {

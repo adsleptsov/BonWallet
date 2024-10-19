@@ -9,16 +9,22 @@
     <h1>Add Card Rewards</h1>
     <form method="POST" action="/rewards/add_card">
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br>
+        <input type="password" id="password" name="password" required><br><br>
 
         <label for="card_name">Card Name:</label><br>
-        <input type="text" id="card_name" name="card_name"><br><br>
+        <input type="text" id="card_name" name="card_name" required><br><br>
+
+        <label for="additional_benefits">Additional Benefits (JSON format):</label><br>
+        <input type="text" id="additional_benefits" name="additional_benefits"><br><br>
 
         <label for="offer_terms_url">Offer Terms URL:</label><br>
         <input type="text" id="offer_terms_url" name="offer_terms_url"><br><br>
 
         <label for="benefit_terms_url">Benefit Terms URL:</label><br>
         <input type="text" id="benefit_terms_url" name="benefit_terms_url"><br><br>
+
+        <label for="qualifying_ids">Qualifying IDs (comma-separated):</label><br>
+        <input type="text" id="qualifying_ids" name="qualifying_ids"><br><br>
 
         <input type="submit" value="Submit">
     </form>

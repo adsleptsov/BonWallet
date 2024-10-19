@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Qualifying</title>
+</head>
+<body>
+    <h1>Add Qualifying</h1>
+    <form method="POST" action="/rewards/add_qualifying">
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="type">Qualifying Type:</label><br>
+        <select id="type" name="type" required>
+            <option value="service">Service</option>
+            <option value="location">Location</option>
+        </select><br><br>
+
+        <label for="service_type">Service Type (if applicable):</label><br>
+        <input type="text" id="service_type" name="service_type"><br><br>
+
+        <label for="location_type">Location Type (if applicable):</label><br>
+        <input type="text" id="location_type" name="location_type"><br><br>
+
+        <label for="point_id">Point ID:</label><br>
+        <input type="number" id="point_id" name="point_id" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
