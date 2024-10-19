@@ -1,16 +1,17 @@
 from server.config import db
 
 card_points = db.Table('card_points',
-    db.Column('card_id', db.Integer, db.ForeignKey('CardRewards.id'), primary_key=True),
-    db.Column('point_id', db.Integer, db.ForeignKey('PointRewards.id'), primary_key=True)
+    db.Column('card_id', db.Integer, db.ForeignKey('card_rewards.id'), primary_key=True),
+    db.Column('point_id', db.Integer, db.ForeignKey('point_rewards.id'), primary_key=True)
 )
 
 point_qualifying = db.Table('point_qualifying', 
-    db.Column('point_id', db.Integer, db.ForeignKey('PointRewards.id'), primary_key=True),
-    db.Column('qualifying_id', db.Integer, db.ForeignKey('Qualifying.id'), primary_key=True)
+    db.Column('point_id', db.Integer, db.ForeignKey('card_rewards.id'), primary_key=True),
+    db.Column('qualifying_id', db.Integer, db.ForeignKey('qualifying.id'), primary_key=True)
 )
 
 class CardRewards(db.Model):
+    __tablename__ = 'card_rewards'
     id = db.Column(db.Integer, primary_key=True)
     card_name = db.Column(db.String(255), nullable=False)
     point_rewards = db.relationship('PointRewards', 
@@ -22,6 +23,7 @@ class CardRewards(db.Model):
     benefit_terms_url = db.Column(db.String(255))
 
 class PointRewards(db.Model):
+    __tablename__ = 'point_rewards'
     id = db.Column(db.Integer, primary_key=True)
     multiplier = db.Column(db.Float, nullable=False)
     qualifying = db.relationship('Qualifying',
@@ -30,16 +32,28 @@ class PointRewards(db.Model):
                                  backref=db.backref('points', lazy=True))
 
 class Qualifying(db.Model):
-    __abstract__ = True  # Abstract class, won't be created in the database
+    __tablename__ = 'qualifying'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
+    type = db.Column(db.String(50))  # Discriminator column
 
-# QualifyingService class, extending Qualifying
+    __mapper_args__ = {
+        'polymorphic_on': type,
+        'polymorphic_identity': 'qualifying'
+    }
+
 class QualifyingService(Qualifying):
-    __tablename__ = 'qualifying_service'
+    __tablename__ = None  # No separate table for this subclass
     service_type = db.Column(db.String(255), nullable=False)
 
-# QualifyingLocation class, extending Qualifying
+    __mapper_args__ = {
+        'polymorphic_identity': 'service'
+    }
+
 class QualifyingLocation(Qualifying):
-    __tablename__ = 'qualifying_location'
+    __tablename__ = None  # No separate table for this subclass
     location_type = db.Column(db.String(255), nullable=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'location'
+    }

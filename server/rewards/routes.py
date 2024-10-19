@@ -32,28 +32,25 @@ def get_point_rewards(id):
         'qualifying': [q.id for q in point.qualifying]  # Assuming you just want the IDs
     })
 
-# Getter for QualifyingService by id
-@rewards_bp.route('/qualifying_service/<int:id>', methods=['GET'])
-def get_qualifying_service(id):
-    service = QualifyingService.query.get(id)
-    if not service:
-        return abort(404, description="QualifyingService not found")
-    
-    return jsonify({
-        'id': service.id,
-        'name': service.name,
-        'service_type': service.service_type
-    })
 
-# Getter for QualifyingLocation by id
-@rewards_bp.route('/qualifying_location/<int:id>', methods=['GET'])
-def get_qualifying_location(id):
-    location = QualifyingLocation.query.get(id)
-    if not location:
-        return abort(404, description="QualifyingLocation not found")
+@rewards_bp.route('/qualifying/<int:id>', methods=['GET'])
+def get_qualifying(id):
+    qualifying = Qualifying.query.get(id)
+    if not qualifying:
+        return abort(404, description="Qualifying not found")
     
-    return jsonify({
-        'id': location.id,
-        'name': location.name,
-        'location_type': location.location_type
-    })
+    response = {
+        'id': qualifying.id,
+        'name': qualifying.name,
+        'type': qualifying.type  # This will be either 'service' or 'location'
+    }
+
+    # If it's a service, include service_type
+    if qualifying.type == 'service':
+        response['service_type'] = qualifying.service_type
+    
+    # If it's a location, include location_type
+    elif qualifying.type == 'location':
+        response['location_type'] = qualifying.location_type
+    
+    return jsonify(response)

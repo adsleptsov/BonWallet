@@ -8,4 +8,4 @@ rewards_bp = Blueprint(
         static_folder="static"
     )
 
-from server.posts import routes
+from server.rewards import routes
