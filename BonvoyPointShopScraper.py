@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 import os
 import requests_html
+import time
 
 # PYPPETEER_CHROMIUM_REVISION = '1263111'
 
@@ -13,7 +14,7 @@ import requests_html
 # pip install lxml_html_clean
 # set pypeteer chromium revision to 1263111
 
-init_url = 'https://shop-with-points.marriott.com/15015MARNELITE/search?Nrpp=96&No='
+init_url = 'https://shop-with-points.marriott.com/15015MARNELITE/search?Nrpp=96&Ns=product.displayName|0&No='
 
 csv_name = 'BonvoyShopItems.csv'
 
@@ -38,8 +39,9 @@ total_num_of_items = 0
 
 def generate_csv(init_url, file_name):
 	starting_no = 0
-	
+	start_time = time.time()
 	with open(file_name, 'w', encoding='utf-8', newline='') as csvfile:
+
 		writecsv = csv.writer(csvfile, delimiter=',')
 
 		writecsv.writerow(["Name of Item", "Item Point Value", "Item URL"])
@@ -84,27 +86,63 @@ def generate_csv(init_url, file_name):
 		# 	# visit a page
 		# 	# grab each item and store it in the csv
 		
-		# item = soup.find(id = 'itemsList')
-		# item = soup.find_all(class_ = 'shortDescription')
-		items = soup.find_all(class_ = 'shortDescription')
+		for i in range(num_of_pages+1):
+			start_time_of_page = time.time()
 
-		# print(items.len())
-		for item in items:
-		
-			# item = i
-			item_name_and_url = item.findChild("a")
-			# print(item_name_and_url)
-			item_name = item_name_and_url.contents[0]
-			item_url = "https://shop-with-points.marriott.com" + item_name_and_url['href']
-			item_point_amount = int(item.findChild(class_ = "amount").contents[2].strip().replace(",",""))
+			new_item_no = (i*96)
+			page_of_items = []
+			#could be 96 or 97 pages
+			# new_item_no = 336
+			
+			full_url = init_url + str(new_item_no)
+			shop_html = shop_session.get(full_url)
+			soup = BeautifulSoup(shop_html.html.raw_html, "lxml")
+
+			print("Scraping page: " + str(i))
 
 
-			writecsv.writerow([item_name,item_point_amount,item_url])
-			# print(item_name)
-			# print(item_url)
-			# print(item_point_amount)
-		# print(item)
 
+			# item = soup.find(id = 'itemsList')
+			# item = soup.find_all(class_ = 'shortDescription')
+			items = soup.find_all(class_ = 'shortDescription')
+
+			# print(items.len())
+			for item in items:
+			
+				# item = i
+				item_name_and_url = item.findChild("a")
+				# print(item_name_and_url)
+				item_name = item_name_and_url.contents[0].replace('"','')
+				item_url = "https://shop-with-points.marriott.com" + item_name_and_url['href']
+
+				
+				item_amount = item.findChild(class_ = "amount").get_text().strip().replace(",","")
+
+				# if item_amount.findChild("span"):
+				# 	# print(item_amount.contents[4])
+				# 	item_point_amount = int(item_amount.contents[4].strip().replace(",",""))
+				# else:
+				# 	item_point_amount = int(item.findChild(class_ = "amount").contents[2].strip().replace(",",""))
+
+				# print(item_amount)
+
+				if "Starting" in item_amount:
+					item_amount = item_amount.split("\n")[2].strip()
+					# print(item_amount)
+
+				page_of_items.append([item_name,item_amount,item_url])
+				# writecsv.writerow([item_name,item_amount,item_url])
+				# print(item_name)
+				# print(item_url)
+				# print(item_point_amount)
+			
+			writecsv.writerows(page_of_items)
+			end_time_of_page = time.time()
+			print("page scrap time: ", end_time_of_page - start_time_of_page)
+			# print(item)
+	end_time = time.time()
+
+	print("Total exec time: ", end_time - start_time)
 
 
 		
