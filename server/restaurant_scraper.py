@@ -38,3 +38,21 @@ def extract_single_reward_data(merchants):
                 "locations": locations
             }
     return None
+
+
+# Main flow of the script
+def main(user_location):
+    data = get_merchants_data(API_URL, user_location)
+    merchants = data.get("merchants", [])
+    reward_data = extract_single_reward_data(merchants)
+    
+    if reward_data:
+        # Output the reward data as JSON for further processing
+        print(json.dumps(reward_data, indent=2))
+    else:
+        print(json.dumps({}))
+
+if __name__ == "__main__":
+    # Example user location coordinates (can be dynamically provided)
+    user_location = "37.22,-80.42"
+    main(user_location)
