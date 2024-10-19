@@ -17,14 +17,14 @@ init_url = 'https://shop-with-points.marriott.com/15015MARNELITE/search?Nrpp=96&
 
 csv_name = 'BonvoyShopItems.csv'
 
-# this url lists items by two parameters
-#NrPP is likely something like number of items per page
+# this url lists item by two parameters
+#NrPP is likely something like number of item per page
 #No= is the "starting item"
 
-#i found that the max that can exist per page is 96 items
+#i found that the max that can exist per page is 96 item
 
 
-#so construct a loop that iterates through the theorized number of items
+#so construct a loop that iterates through the theorized number of item
 #right now it is 4289 numbers
 
 #grab each item and put it into a csv file
@@ -33,13 +33,16 @@ csv_name = 'BonvoyShopItems.csv'
 #go to first page and calculate num of pages
 
 
-total_items = 0
+total_num_of_items = 0
 
 
 def generate_csv(init_url, file_name):
 	starting_no = 0
 	
 	with open(file_name, 'w', encoding='utf-8', newline='') as csvfile:
+		writecsv = csv.writer(csvfile, delimiter=',')
+
+		writecsv.writerow(["Name of Item", "Item Point Value", "Item URL"])
 		full_url = init_url+str(starting_no)
 
 		print("Going to " + full_url)
@@ -53,8 +56,8 @@ def generate_csv(init_url, file_name):
 
 		shop_html = shop_session.get(home_url)
 		
-		shop_html.html.render()
 		# print(shop_html.html.text)
+		shop_html.html.render()
 		
 		
 		# then go to the right url
@@ -62,14 +65,45 @@ def generate_csv(init_url, file_name):
 		
 
 
-		print(shop_html.html.text)
-
+		# print(shop_html.html.text)
+		# soup = shop_html.html
+		soup = BeautifulSoup(shop_html.html.raw_html, "lxml")
+		# soup = BeautifulSoup(shop_html.html, "xml")
 		# soup = BeautifulSoup(shop_html.content, "xml")
+		total_num_of_items = 0
 
-		# total_items = soup.find(class_ = 'breadCrumbs')
-		# print(total_items)
-		# if (starting_no == 0):
-		# 	#fetch total number of items
+		if (starting_no == 0):
+			# fetch total number of item
+			total_num_of_items = int((soup.find(class_ = 'breadCrumbs').contents[0]).strip().split(" ")[0].split("(")[1])
+			# print(total_num_of_items)
+
+		
+		num_of_pages = int(total_num_of_items / 96)
+
+		# for i in range(num_of_pages):
+		# 	# visit a page
+		# 	# grab each item and store it in the csv
+		
+		# item = soup.find(id = 'itemsList')
+		# item = soup.find_all(class_ = 'shortDescription')
+		items = soup.find_all(class_ = 'shortDescription')
+
+		# print(items.len())
+		for item in items:
+		
+			# item = i
+			item_name_and_url = item.findChild("a")
+			# print(item_name_and_url)
+			item_name = item_name_and_url.contents[0]
+			item_url = "https://shop-with-points.marriott.com" + item_name_and_url['href']
+			item_point_amount = int(item.findChild(class_ = "amount").contents[2].strip().replace(",",""))
+
+
+			writecsv.writerow([item_name,item_point_amount,item_url])
+			# print(item_name)
+			# print(item_url)
+			# print(item_point_amount)
+		# print(item)
 
 
 
