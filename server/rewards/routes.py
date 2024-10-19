@@ -2,7 +2,10 @@ from server.rewards import rewards_bp
 from flask import Blueprint, jsonify, abort, request
 from server.config import db
 from server.rewards.models import CardRewards, PointRewards, QualifyingService, QualifyingLocation
-from server.restaurant_scraper  import get_merchants_data, extract_single_reward_data  # Assuming your scraper file is named scraper.py
+#from server.restaurant_scraper import get_merchants_data, extract_single_reward_data  # Assuming your scraper file is named scraper.py
+from server.config import hashes
+from werkzeug.security import check_password_hash
+
 
 # Getter for CardRewards by id
 @rewards_bp.route('/card_rewards/<int:id>', methods=['GET'])
