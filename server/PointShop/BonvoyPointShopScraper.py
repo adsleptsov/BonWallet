@@ -1,13 +1,9 @@
 from bs4 import BeautifulSoup, SoupStrainer
 # import requests
 import csv
-import os
 import requests_html
 import time
 
-# PYPPETEER_CHROMIUM_REVISION = '1263111'
-
-# os.environ['PYPPETEER_CHROMIUM_REVISION'] = PYPPETEER_CHROMIUM_REVISION
 
 # pip install requests_html
 # pip install bs4
