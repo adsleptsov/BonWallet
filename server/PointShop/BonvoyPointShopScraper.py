@@ -10,7 +10,7 @@ import time
 # pip install lxml_html_clean
 # set pypeteer chromium revision to 1263111
 
-init_url = 'https://shop-with-points.marriott.com/15015MARNELITE/search?Nrpp=96&Ns=product.displayName|0&No='
+init_url = 'https://shop-with-points.marriott.com/15015MARNELITE/search?Nrpp=96&Ns=sku.nowPaxPrice|0&No='
 
 csv_name = 'BonvoyShopItems.csv'
 
@@ -111,16 +111,20 @@ def generate_csv(init_url, file_name):
 
 			# print(items.len())
 			for item in items:
-			
+				# print(item)
 				# item = i
-				item_name_and_url = item.findChild("a")
+				# item_name_and_url = item.findChild("a")
+				item_name_and_url = item.select_one("a")
+				# print (item_name_and_url.get_text())
+
 				# print(item_name_and_url)
-				item_name = item_name_and_url.contents[0].replace('"','')
+				# item_name = item_name_and_url.contents[0].replace('"','')
+				item_name = item_name_and_url.get_text().replace('"',"")
 				item_url = "https://shop-with-points.marriott.com" + item_name_and_url['href']
 
-				
-				item_amount = item.findChild(class_ = "amount").get_text().strip().replace(",","")
-
+				# print(item.select_one(".amount").get_text().strip().strip(','))
+				# item_amount = item.findChild(class_ = "amount").get_text().strip().replace(",","")
+				item_amount = item.select_one(".amount").get_text().strip().replace(',','')
 				# if item_amount.findChild("span"):
 				# 	# print(item_amount.contents[4])
 				# 	item_point_amount = int(item_amount.contents[4].strip().replace(",",""))
